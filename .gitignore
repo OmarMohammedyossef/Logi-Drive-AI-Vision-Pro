@@ -1,6 +1,5 @@
 # MkDocs build output — Vercel rebuilds this on every deploy
 
-
 # Python
 __pycache__/
 *.py[cod]
