@@ -4,7 +4,7 @@
   "installCommand": "pip3 install -r requirements.txt",
   "buildCommand": "python3 -m mkdocs build && find site -name '*.map' -delete",
   "outputDirectory": "site",
-  "ignoreCommand": "git rev-parse HEAD^ >/dev/null 2>&1 && git diff --quiet HEAD^ HEAD -- docs mkdocs.yml requirements.txt vercel.json",
+  "ignoreCommand": "[ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && git cat-file -e \"$VERCEL_GIT_PREVIOUS_SHA\" 2>/dev/null && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- docs mkdocs.yml requirements.txt vercel.json",
   "headers": [
     {
       "source": "/assets/stylesheets/main.:hash.min.css",
