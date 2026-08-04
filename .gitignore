@@ -1,0 +1,15 @@
+# MkDocs build output — Vercel rebuilds this on every deploy
+site/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Obsidian per-machine UI state
+.obsidian/workspace.json
+
+# OS noise
+.DS_Store
+Thumbs.db

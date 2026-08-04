@@ -1,0 +1,159 @@
+site_name: Logi Drive AI Vision Pro
+site_description: >-
+  Engineering documentation for a Raspberry Pi + STM32 Advanced Driver
+  Assistance System (ADAS) graduation project.
+site_author: Abdallah Shehawey
+site_url: https://logi-drive-ai-vision-pro.vercel.app/
+repo_url: https://github.com/abdallah-shehawey/Logi-Drive-AI-Vision-Pro
+repo_name: Logi-Drive-AI-Vision-Pro
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/car-connected
+    repo: fontawesome/brands/git-alt
+  favicon: assets/favicon.svg
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - navigation.tracking
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+
+plugins:
+  - search
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      zoomable: true
+      draggable: true
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - tables
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+      title: On this page
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - Overview: architecture/main-system.md
+      - Extended Notes: architecture/main-system-extended.md
+      - Logger & Diagnostics (v1): architecture/logger.md
+      - Logger & Diagnostics (v2): architecture/logger-v2.md
+      - ADAS Feature Survey: architecture/feature-survey.md
+  - Server:
+      - Overview: server/overview.md
+      - Docker & Qt Build Issues: server/docker-build-issues.md
+      - HTTP Notes: server/http.md
+  - systemd:
+      - Getting Started: systemd/getting-started.md
+      - Creating a New Service: systemd/creating-a-service.md
+  - CAN Bus:
+      - Overview: can-bus/can-overview.md
+      - Virtual CAN Bus Setup: can-bus/virtual-can.md
+      - Virtual CAN as a Service: can-bus/virtual-can-service.md
+      - Raspberry Pi CAN Setup: can-bus/rpi-can-setup.md
+      - STM32 <-> Pi CAN Test: can-bus/stm32-pi-can-test.md
+      - CAN Interrupts: can-bus/can-interrupts.md
+      - Qt QCanBusDevice: can-bus/qcanbusdevice.md
+      - Resources: can-bus/resources.md
+  - Yocto Linux:
+      - Introduction: yocto/introduction.md
+      - SSH Access: yocto/ssh-access.md
+      - Qt6 Integration: yocto/qt6-integration.md
+      - Building a Custom Image: yocto/custom-image.md
+      - Raspberry Pi Notes: yocto/raspberry-pi-notes.md
+  - FreeRTOS:
+      - Porting FreeRTOS to STM32F103: freertos/porting-freertos.md
+      - STM32 C++ Interface — Build Steps: freertos/stm32-cpp-interface-build.md
+  - Testing:
+      - GoogleTest Primer: unit-testing/googletest-primer.md
+  - D-Bus:
+      - Introduction: dbus/01-intro.md
+      - The System Bus: dbus/02-system-bus.md
+      - Policy XML: dbus/03-policy-xml.md
+      - Signals: dbus/04-signals.md
+      - Introspection: dbus/05-introspection.md
+      - Data Exposure Guide: dbus/06-data-exposure.md
+      - Property Exposure: dbus/07-property-exposure.md
+      - Defining a Custom Type: dbus/08-custom-type.md
+      - Defining an Enum Type: dbus/09-enum-type.md
+  - Network:
+      - WPA Supplicant Guide: network/wpa-supplicant.md
+      - Wi-Fi Scanning & Connecting (nmcli): network/wifi-nmcli.md
+      - NetworkManager Integration: network/networkmanager-integration.md
+      - Setting Up a Static IP: network/static-ip.md
+      - SIM900 Shield Setup (RPi4): network/sim900-shield-setup.md
+  - SIM / GSM:
+      - Hardware Introduction: sim-module/introduction.md
+      - Virtual Serial Port (socat): sim-module/virtual-serial-port-socat.md
+      - HTTP GET Requests: sim-module/http-get.md
+      - HTTP POST Requests: sim-module/http-post.md
+      - Resources: sim-module/resources.md
+  - Hardware:
+      - Encoder: car-hardware/encoder.md
+      - IR Sensor over CAN: car-hardware/ir-with-can.md
+      - C String Handling Notes: car-hardware/string-h-notes.md
+  - GUI:
+      - "QML: Binding vs. Assigning": gui/qml-binding-vs-assigning.md
+      - Virtual Keyboard: gui/virtual-keyboard.md
+  - Roadmap: roadmap.md
