@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "python3 -m pip install --disable-pip-version-check -r requirements.txt || python3 -m pip install --disable-pip-version-check --user -r requirements.txt || python3 -m pip install --disable-pip-version-check --user --break-system-packages -r requirements.txt",
-  "buildCommand": "python3 -m mkdocs build && find site -name '*.map' -delete",
+  "installCommand": "if [ -f site/index.html ]; then echo '==> Prebuilt site/ was uploaded with this deployment - skipping the Python install.'; else python3 -m pip install --disable-pip-version-check -r requirements.txt || python3 -m pip install --disable-pip-version-check --user -r requirements.txt || python3 -m pip install --disable-pip-version-check --user --break-system-packages -r requirements.txt; fi",
+  "buildCommand": "if [ -f site/index.html ]; then echo '==> Publishing the uploaded site/ as-is. It is only as fresh as the machine that ran `mkdocs build`.'; else echo '==> No prebuilt site/ - building the docs with MkDocs.'; python3 -m mkdocs build; fi && find site -name '*.map' -delete",
   "outputDirectory": "site",
   "ignoreCommand": "[ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && git cat-file -e \"$VERCEL_GIT_PREVIOUS_SHA\" 2>/dev/null && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- docs mkdocs.yml requirements.txt vercel.json",
   "headers": [

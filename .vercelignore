@@ -1,0 +1,38 @@
+# Applies to `vercel` CLI deployments only — a Git deploy clones the whole repo
+# and ignores this file. The CLI reads this file INSTEAD of .gitignore, so
+# anything that should stay out of an upload has to be listed here.
+#
+# Note what is deliberately NOT listed: site/.
+#
+#   * Git deploy   — site/ is git-ignored, so Vercel never receives it and
+#                    vercel.json builds the docs with MkDocs.
+#   * CLI deploy   — if the machine running `vercel` has a locally built site/,
+#                    it IS uploaded, and vercel.json publishes it as-is instead
+#                    of building. That is the "no Python needed" path.
+
+.git
+.github
+.obsidian
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.cache/
+
+# The original flat note folders, superseded by docs/. ~4.9 MB the build never
+# reads — they stay in the repo for history, but there is no reason to upload
+# them on every deploy.
+01-Server/
+02-Systemd/
+03-Handle-Can/
+04-YOCTO/
+06-PortingFreeRtos/
+07-Unit-Test/
+08-DBus/
+09-NetwokManagement/
+10-SIM-Module/
+11-CarHw/
+GUI/
+Images/

@@ -55,6 +55,29 @@ Vercel has no built-in MkDocs preset, so the build is declared explicitly in
 | `outputDirectory` | `site` | Where MkDocs writes the static site |
 | `ignoreCommand` | `git diff --quiet "$VERCEL_GIT_PREVIOUS_SHA" HEAD -- docs mkdocs.yml …` | Skips the build entirely when a commit doesn't touch the site |
 
+### Two ways to deploy
+
+Both `installCommand` and `buildCommand` start by testing for `site/index.html`,
+so the same `vercel.json` covers two situations without a flag or a setting:
+
+| | **Vercel builds it** | **You upload a build** |
+| --- | --- | --- |
+| Triggered by | `git push` — or `vercel` from a machine with no local `site/` | `vercel` from a machine that has run `mkdocs build` |
+| Vercel receives `site/`? | No — it is git-ignored, and a Git deploy only ever sees committed files | Yes — [`.vercelignore`](.vercelignore) deliberately does *not* exclude it |
+| What runs on Vercel | `pip install`, then `mkdocs build` | Nothing. The upload is published as-is |
+| Needs Python locally | No | Yes |
+| Build log says | `==> No prebuilt site/ - building the docs with MkDocs.` | `==> Publishing the uploaded site/ as-is.` |
+
+The first is the normal path and the one the Git integration uses. The second
+exists for deploying from a machine without a Python toolchain, and for pushing
+a fix out without waiting on a build.
+
+> [!CAUTION]
+> An uploaded `site/` is published **exactly as it is on disk** — Vercel has no
+> way to tell a fresh build from a month-old one. Run `mkdocs build` immediately
+> before `vercel --prod`, or you will silently redeploy stale pages. When in
+> doubt, `rm -rf site` and let Vercel build it.
+
 ### Importing the repo into Vercel
 
 The repo is self-configuring: everything Vercel needs is committed, so a fresh
@@ -73,7 +96,7 @@ import needs **no dashboard settings at all**.
 > Vercel reads `vercel.json` from the root directory, so pointing it at `site/`
 > makes it skip the build entirely.
 >
-> `site/` is git-ignored — Vercel regenerates it on every deploy.
+> `site/` is git-ignored — on a Git deploy Vercel regenerates it every time.
 
 One more thing worth knowing: `ignoreCommand` in `vercel.json` **overrides** the
 dashboard's *Ignored Build Step* setting, so changing that in the UI does nothing.
