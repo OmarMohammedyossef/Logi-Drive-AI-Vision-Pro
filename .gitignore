@@ -1,5 +1,5 @@
-# MkDocs build output — Vercel rebuilds this on every deploy
-site/
+# NOTE: site/ is intentionally NOT ignored. The built site is committed so that
+# Vercel has nothing to build — see "Two ways to deploy" in README.md.
 .cache/
 
 # Python

@@ -55,28 +55,39 @@ Vercel has no built-in MkDocs preset, so the build is declared explicitly in
 | `outputDirectory` | `site` | Where MkDocs writes the static site |
 | `ignoreCommand` | `git diff --quiet "$VERCEL_GIT_PREVIOUS_SHA" HEAD -- docs mkdocs.yml …` | Skips the build entirely when a commit doesn't touch the site |
 
-### Two ways to deploy
+### The built site is committed
 
-Both `installCommand` and `buildCommand` start by testing for `site/index.html`,
-so the same `vercel.json` covers two situations without a flag or a setting:
+`site/` is **checked into the repository**, and both `installCommand` and
+`buildCommand` start by testing for `site/index.html`. Finding it, they skip
+straight past the Python install and the MkDocs build, and Vercel publishes the
+committed directory as-is.
 
-| | **Vercel builds it** | **You upload a build** |
-| --- | --- | --- |
-| Triggered by | `git push` — or `vercel` from a machine with no local `site/` | `vercel` from a machine that has run `mkdocs build` |
-| Vercel receives `site/`? | No — it is git-ignored, and a Git deploy only ever sees committed files | Yes — [`.vercelignore`](.vercelignore) deliberately does *not* exclude it |
-| What runs on Vercel | `pip install`, then `mkdocs build` | Nothing. The upload is published as-is |
-| Needs Python locally | No | Yes |
-| Build log says | `==> No prebuilt site/ - building the docs with MkDocs.` | `==> Publishing the uploaded site/ as-is.` |
+So a deploy installs nothing, builds nothing, and cannot fail on a dependency,
+a Python version, or a MkDocs release. Vercel is doing one job: serving files.
 
-The first is the normal path and the one the Git integration uses. The second
-exists for deploying from a machine without a Python toolchain, and for pushing
-a fix out without waiting on a build.
+The build path is still there as a fallback — delete `site/` and the very next
+deploy installs `requirements.txt` and runs `mkdocs build` instead. Nothing
+selects between the two; the presence of the directory is the whole signal, so
+there is no dashboard setting or env var that can drift out of sync with it.
+The build log always says which path it took:
+
+| | Log line |
+| --- | --- |
+| `site/` present | `==> Publishing the uploaded site/ as-is.` |
+| `site/` absent | `==> No prebuilt site/ - building the docs with MkDocs.` |
 
 > [!CAUTION]
-> An uploaded `site/` is published **exactly as it is on disk** — Vercel has no
-> way to tell a fresh build from a month-old one. Run `mkdocs build` immediately
-> before `vercel --prod`, or you will silently redeploy stale pages. When in
-> doubt, `rm -rf site` and let Vercel build it.
+> **Editing `docs/` is not enough — you must rebuild and commit `site/` too**,
+> or the deploy will quietly publish the old pages. Vercel cannot tell a fresh
+> build from a month-old one. Every docs change is therefore two steps:
+>
+> ```bash
+> python3 -m mkdocs build --strict && find site -name '*.map' -delete
+> git add docs site && git commit && git push
+> ```
+>
+> If you would rather not think about it, delete `site/` and re-add the ignore
+> rule — Vercel will go back to building the docs itself on every push.
 
 ### Importing the repo into Vercel
 
@@ -127,12 +138,15 @@ minutes, and those are minimised too:
 
 ## Repository layout
 
-```
-grad-project/
+```text
+Logi-Drive-AI-Vision-Pro/
 ├── mkdocs.yml                 # site config: theme, plugins, navigation
 ├── vercel.json                # Vercel build command, output dir, cache headers
+├── .vercelignore              # what a `vercel` CLI upload leaves out
 ├── requirements.txt           # pinned MkDocs / Material / glightbox versions
 ├── README.md                  # this file
+├── site/                      # BUILT OUTPUT, committed — this is what Vercel serves
+│                              # regenerate with `mkdocs build` after editing docs/
 ├── docs/
 │   ├── index.md               # homepage: hero, architecture diagram, section cards
 │   ├── assets/
