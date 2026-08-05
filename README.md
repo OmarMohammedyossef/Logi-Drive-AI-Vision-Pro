@@ -49,17 +49,38 @@ Vercel has no built-in MkDocs preset, so the build is declared explicitly in
 
 | Setting | Value | Why |
 | --- | --- | --- |
-| `installCommand` | `pip3 install -r requirements.txt` | Pinned versions, so the deploy matches local builds |
+| `framework` | `null` | Stops Vercel from guessing a preset and running `npm install` |
+| `installCommand` | `python3 -m pip install -r requirements.txt` (with `--user` / `--break-system-packages` fallbacks) | Pinned versions, so the deploy matches local builds. `python3 -m pip` needs no `pip3` on `PATH`, and the fallbacks survive a build image that marks its Python [externally managed](https://peps.python.org/pep-0668/) |
 | `buildCommand` | `python3 -m mkdocs build && find site -name '*.map' -delete` | `python3 -m` avoids `PATH` issues; source maps are dev-only |
 | `outputDirectory` | `site` | Where MkDocs writes the static site |
-| `ignoreCommand` | `git diff --quiet HEAD^ HEAD -- docs mkdocs.yml …` | Skips the build entirely when a commit doesn't touch the site |
+| `ignoreCommand` | `git diff --quiet "$VERCEL_GIT_PREVIOUS_SHA" HEAD -- docs mkdocs.yml …` | Skips the build entirely when a commit doesn't touch the site |
+
+### Importing the repo into Vercel
+
+The repo is self-configuring: everything Vercel needs is committed, so a fresh
+import needs **no dashboard settings at all**.
+
+1. Push the repo to GitHub.
+2. Vercel → **Add New… → Project** → import the repository.
+3. Leave every field on its default — **Framework Preset `Other`**, **Root
+   Directory** the repository root, and *do not* override Build/Output/Install
+   Command. `vercel.json` takes precedence over the dashboard anyway.
+4. **Deploy.** The first build installs MkDocs from `requirements.txt` and
+   publishes `site/`.
 
 > [!IMPORTANT]
-> In the Vercel project settings, **Root Directory must be the repository root**
-> (left empty) — *not* `site/`. Vercel reads `vercel.json` from the root
-> directory, so pointing it at `site/` makes it skip the build entirely.
+> **Root Directory must be the repository root** (left empty) — *not* `site/`.
+> Vercel reads `vercel.json` from the root directory, so pointing it at `site/`
+> makes it skip the build entirely.
 >
 > `site/` is git-ignored — Vercel regenerates it on every deploy.
+
+One more thing worth knowing: `ignoreCommand` in `vercel.json` **overrides** the
+dashboard's *Ignored Build Step* setting, so changing that in the UI does nothing.
+Vercel's convention is also inverted from a shell's — **exit code 0 skips the
+build**, non-zero builds it. The command deliberately fails open: no previous
+deployment, or a previous SHA missing from Vercel's shallow clone, means the
+build runs.
 
 **A 404 on the deployed URL almost always means the output directory was empty** —
 either the build didn't run, or Vercel was looking in the wrong folder.
